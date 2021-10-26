@@ -1,19 +1,34 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
+
 Resources:
-  # See https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
-  # for more info to see how to tune the lambda function configs based on your use case.
-  AppFunction:
+
+  GetAuroraItemFunction:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: java8
-      Handler: com.home.amazon.serverless.App::handleRequest
+      Handler: com.home.amazon.serverless.lambda.GetAuroraItemFunction::handleRequest
       Timeout: 60
       MemorySize: 512
-      CodeUri: ./target/aws-serverless-aurora-project.jar
-      # Attach policies here to give the function permission to access other AWS resources if needed
-      # See: https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst
-      # eg:
-      #Policies:
-      # - S3ReadPolicy:
-      #     BucketName: test-bucket
+      CodeUri: .
+      Policies:
+        - AWSLambdaExecute
+        - Version: '2012-10-17'
+          Statement:
+           - Effect: Allow
+             Action:
+              - rds:*
+             Resource: '*'
+      Environment:
+        Variables:
+          DatabaseName: books
+
+  AuroraServerlessCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      Engine: aurora-mysql
+      EngineMode: serverless
+      DatabaseName: books
+      MasterUsername: rostyslavadmin
+      MasterUserPassword: rostyslavadmin
+      EnableHttpEndpoint: true
