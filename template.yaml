@@ -17,12 +17,13 @@ Resources:
           Statement:
            - Effect: Allow
              Action:
-              - rds:*
+              - rds-data:*
              Resource: '*'
       Environment:
         Variables:
           AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
-          DatabaseName: books
+          DatabaseName: booksdb
+      AutoPublishAlias: dev
 
   AuroraServerlessCluster:
     Type: AWS::RDS::DBCluster
