@@ -19,11 +19,13 @@ public class GetAuroraItemFunction implements RequestHandler<Object, String> {
     private final RdsDataClient rdsDataClient;
     private final String auroraClusterArn;
     private final String auroraDatabase;
+    private final String auroraSecretArn;
 
     public GetAuroraItemFunction() {
         rdsDataClient = DependencyFactory.rdsClient();
         auroraClusterArn = DependencyFactory.auroraClusterArn();
         auroraDatabase = DependencyFactory.auroraDatabase();
+        auroraSecretArn = DependencyFactory.auroraSecretArn();
     }
 
 
@@ -32,6 +34,7 @@ public class GetAuroraItemFunction implements RequestHandler<Object, String> {
         ExecuteStatementRequest request = ExecuteStatementRequest.builder()
                 .database(auroraDatabase)
                 .resourceArn(auroraClusterArn)
+                .secretArn(auroraSecretArn)
                 .sql(String.format(GET_BY_ID_SQL_STATEMENT, auroraDatabase))
                 //.parameters(SqlParameter.builder().name("id").value(Field.builder().stringValue("1").build()).build())
                 .build();

@@ -15,6 +15,7 @@ public class DependencyFactory {
 
     public static final String AURORA_CLUSTER_ARN_ENV = "AuroraClusterArn";
     public static final String DATABASE_NAME_ENV = "DatabaseName";
+    public static final String AURORA_SECRET_ARN_ENV = "AuroraSecretArn";
 
     private DependencyFactory() {}
 
@@ -34,5 +35,9 @@ public class DependencyFactory {
 
     public static String auroraDatabase() {
         return System.getenv(DATABASE_NAME_ENV);
+    }
+
+    public static String auroraSecretArn() {
+        return System.getenv(AURORA_SECRET_ARN_ENV);
     }
 }

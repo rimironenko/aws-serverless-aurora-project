@@ -1,6 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  AuroraUsername:
+    Type: String
+    Description: Master user name for the Aurora Cluster
+  AuroraPassword:
+    Type: String
+    Description: Master password for the Aurora Cluster
+
+
 Resources:
 
   GetAuroraItemFunction:
@@ -23,6 +32,7 @@ Resources:
         Variables:
           AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
           DatabaseName: booksdb
+          AuroraSecretArn: !Ref AuroraSecret
       AutoPublishAlias: dev
 
   AuroraServerlessCluster:
@@ -31,6 +41,11 @@ Resources:
       Engine: aurora-mysql
       EngineMode: serverless
       DatabaseName: booksdb
-      MasterUsername: rostyslavadmin
-      MasterUserPassword: rostyslavadmin
+      MasterUsername: !Ref AuroraUsername
+      MasterUserPassword: !Ref AuroraPassword
       EnableHttpEndpoint: true
+
+  AuroraSecret:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      SecretString: !Sub '{"username":"${AuroraUsername}","password":"${AuroraPassword}", "dbClusterIdentifier":"${AuroraServerlessCluster}"}'
