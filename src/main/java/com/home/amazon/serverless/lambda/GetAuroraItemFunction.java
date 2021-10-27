@@ -3,16 +3,14 @@ package com.home.amazon.serverless.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.home.amazon.serverless.DependencyFactory;
+import com.home.amazon.serverless.dto.Book;
 import software.amazon.awssdk.services.rdsdata.RdsDataClient;
 import software.amazon.awssdk.services.rdsdata.model.*;
 
-/**
- * Lambda function entry point. You can change to use other pojo type or implement
- * a different RequestHandler.
- *
- * @see <a href=https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html>Lambda Java Handler</a> for more information
- */
-public class GetAuroraItemFunction implements RequestHandler<Object, String> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class GetAuroraItemFunction implements RequestHandler<Object, List<Book>> {
 
     private static final String GET_BY_ID_SQL_STATEMENT = "select * from %s.books";
 
@@ -30,16 +28,29 @@ public class GetAuroraItemFunction implements RequestHandler<Object, String> {
 
 
     @Override
-    public String handleRequest(Object input, Context context) {
+    public List<Book> handleRequest(Object input, Context context) {
+        List<Book> result = new ArrayList<>();
         ExecuteStatementRequest request = ExecuteStatementRequest.builder()
                 .database(auroraDatabase)
                 .resourceArn(auroraClusterArn)
                 .secretArn(auroraSecretArn)
                 .sql(String.format(GET_BY_ID_SQL_STATEMENT, auroraDatabase))
-                //.parameters(SqlParameter.builder().name("id").value(Field.builder().stringValue("1").build()).build())
                 .build();
         ExecuteStatementResponse executeStatementResponse = rdsDataClient.executeStatement(request);
-        System.out.println(executeStatementResponse);
-        return null;
+        if (executeStatementResponse.hasRecords()) {
+            List<List<Field>> records = executeStatementResponse.records();
+            for (List<Field> record : records) {
+                result.add(transformToBook(record));
+            }
+        }
+        return result;
+    }
+
+    private Book transformToBook(List<Field> record) {
+        Long id = record.get(0).longValue();
+        Book book = new Book(id);
+        book.setName(record.get(1).stringValue());
+        book.setAuthor(record.get(2).stringValue());
+        return book;
     }
 }

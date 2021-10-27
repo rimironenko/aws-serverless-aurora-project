@@ -17,8 +17,8 @@ Resources:
     Properties:
       Runtime: java8
       Handler: com.home.amazon.serverless.lambda.GetAuroraItemFunction::handleRequest
-      Timeout: 60
-      MemorySize: 512
+      Timeout: 15
+      MemorySize: 128
       CodeUri: .
       Policies:
         - AWSLambdaExecute
