@@ -21,6 +21,7 @@ Resources:
              Resource: '*'
       Environment:
         Variables:
+          AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
           DatabaseName: books
 
   AuroraServerlessCluster:
@@ -28,7 +29,7 @@ Resources:
     Properties:
       Engine: aurora-mysql
       EngineMode: serverless
-      DatabaseName: books
+      DatabaseName: booksdb
       MasterUsername: rostyslavadmin
       MasterUserPassword: rostyslavadmin
       EnableHttpEndpoint: true
