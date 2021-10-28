@@ -17,8 +17,8 @@ Resources:
     Properties:
       Runtime: java8
       Handler: com.home.amazon.serverless.lambda.GetAuroraItemFunction::handleRequest
-      Timeout: 15
-      MemorySize: 128
+      Timeout: 60
+      MemorySize: 256
       CodeUri: .
       Policies:
         - AWSLambdaExecute
@@ -26,8 +26,12 @@ Resources:
           Statement:
            - Effect: Allow
              Action:
-              - rds-data:*
-             Resource: '*'
+              - rds-data:BatchExecuteStatement
+              - rds-data:BeginTransaction
+              - rds-data:CommitTransaction
+              - rds-data:ExecuteStatement
+              - rds-data:RollbackTransaction
+             Resource: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
            - Effect: Allow
              Action:
                - secretsmanager:GetSecretValue
