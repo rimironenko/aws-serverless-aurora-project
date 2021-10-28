@@ -15,8 +15,8 @@ import java.util.List;
 
 public class GetAuroraItemFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private static final String GET_BY_ID_SQL_STATEMENT = "select * from %s.books where id=:id";
-    private static final String ID_SQL_PARAMETER_NAME = "id";
+    private static final String GET_BY_ID_SQL_STATEMENT = "select id, name, author from %s.books where id=:id";
+    static final String ID_SQL_PARAMETER_NAME = "id";
 
     private final RdsDataClient rdsDataClient;
     private final String auroraClusterArn;
