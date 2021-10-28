@@ -42,6 +42,14 @@ Resources:
           DatabaseName: booksdb
           AuroraSecretArn: !Ref AuroraSecret
       AutoPublishAlias: dev
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /books/{id}
+            Method: get
+            RestApiId:
+              Ref: AuroraApi
 
   AuroraServerlessCluster:
     Type: AWS::RDS::DBCluster
@@ -57,3 +65,10 @@ Resources:
     Type: 'AWS::SecretsManager::Secret'
     Properties:
       SecretString: !Sub '{"username":"${AuroraUsername}","password":"${AuroraPassword}", "dbClusterIdentifier":"${AuroraServerlessCluster}"}'
+
+  AuroraApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: dev
+      Variables:
+        LAMBDA_ALIAS: dev

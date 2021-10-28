@@ -2,6 +2,8 @@ package com.home.amazon.serverless.dto;
 
 public class Book {
 
+    private static final String JSON_TEMPLATE = "{\"id\":%d,\"name\":\"%s\",\"author\":\"%s\"}";
+
     private final Long id;
     private String author;
     private String name;
@@ -28,5 +30,10 @@ public class Book {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(JSON_TEMPLATE, id, name, author);
     }
 }
