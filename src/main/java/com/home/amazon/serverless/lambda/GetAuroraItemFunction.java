@@ -12,7 +12,8 @@ import java.util.List;
 
 public class GetAuroraItemFunction implements RequestHandler<Object, List<Book>> {
 
-    private static final String GET_BY_ID_SQL_STATEMENT = "select * from %s.books";
+    private static final String GET_BY_ID_SQL_STATEMENT = "select * from %s.books where id=:id";
+    private static final String ID_SQL_PARAMETER_NAME = "id";
 
     private final RdsDataClient rdsDataClient;
     private final String auroraClusterArn;
@@ -35,6 +36,7 @@ public class GetAuroraItemFunction implements RequestHandler<Object, List<Book>>
                 .resourceArn(auroraClusterArn)
                 .secretArn(auroraSecretArn)
                 .sql(String.format(GET_BY_ID_SQL_STATEMENT, auroraDatabase))
+                .parameters(SqlParameter.builder().name(ID_SQL_PARAMETER_NAME).value(Field.builder().stringValue("1").build()).build())
                 .build();
         ExecuteStatementResponse executeStatementResponse = rdsDataClient.executeStatement(request);
         if (executeStatementResponse.hasRecords()) {
