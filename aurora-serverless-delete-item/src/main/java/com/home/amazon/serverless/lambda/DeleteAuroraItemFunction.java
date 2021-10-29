@@ -5,8 +5,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
-import com.home.amazon.serverless.core.DependencyFactory;
-import software.amazon.awssdk.services.rdsdata.RdsDataClient;
+import com.home.amazon.serverless.core.BaseAuroraFunction;
 import software.amazon.awssdk.services.rdsdata.model.ExecuteStatementRequest;
 import software.amazon.awssdk.services.rdsdata.model.ExecuteStatementResponse;
 import software.amazon.awssdk.services.rdsdata.model.Field;
@@ -14,20 +13,12 @@ import software.amazon.awssdk.services.rdsdata.model.SqlParameter;
 
 import java.util.Collections;
 
-public class DeleteAuroraItemFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class DeleteAuroraItemFunction extends BaseAuroraFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     static final String REMOVE_BY_ID_SQL_STATEMENT = "delete from %s.books where id=:id";
 
-    private final RdsDataClient rdsDataClient;
-    private final String auroraClusterArn;
-    private final String auroraDatabase;
-    private final String auroraSecretArn;
-
     public DeleteAuroraItemFunction() {
-        rdsDataClient = DependencyFactory.rdsClient();
-        auroraClusterArn = DependencyFactory.auroraClusterArn();
-        auroraDatabase = DependencyFactory.auroraDatabase();
-        auroraSecretArn = DependencyFactory.auroraSecretArn();
+        super();
     }
 
     @Override

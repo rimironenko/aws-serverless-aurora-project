@@ -14,38 +14,40 @@ import software.amazon.awssdk.services.rdsdata.model.SqlParameter;
 
 import java.util.Collections;
 
-public class PutAuroraItemFunction extends BaseAuroraFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class UpdateAuroraItemFunction extends BaseAuroraFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    static final String INSERT_ITEM_SQL_STATEMENT = "insert into %s.books(name, author) values(':name',':author')";
+    static final String UPDATE_BY_ID_SQL_STATEMENT = "update %s.books set name=':name', author=':author' where id=:id";
 
-    public PutAuroraItemFunction() {
+    public UpdateAuroraItemFunction() {
         super();
     }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         String body = input.getBody();
-        int statusCode = 204;
+        int responseCode = 204;
         if (body != null && !body.isEmpty()) {
-            Book item = new Gson().fromJson(body, Book.class);
+            Gson gson = new Gson();
+            Book item = gson.fromJson(body, Book.class);
             if (item != null) {
                 ExecuteStatementRequest request = ExecuteStatementRequest.builder()
                         .database(auroraDatabase)
                         .resourceArn(auroraClusterArn)
                         .secretArn(auroraSecretArn)
-                        .sql(String.format(INSERT_ITEM_SQL_STATEMENT, auroraDatabase))
+                        .sql(String.format(UPDATE_BY_ID_SQL_STATEMENT, auroraDatabase))
+                        .parameters(SqlParameter.builder().name("id").value(Field.builder().longValue(item.getId()).build()).build())
                         .parameters(SqlParameter.builder().name("name").value(Field.builder().stringValue(item.getName()).build()).build())
                         .parameters(SqlParameter.builder().name("author").value(Field.builder().stringValue(item.getAuthor()).build()).build())
                         .build();
                 ExecuteStatementResponse executeStatementResponse = rdsDataClient.executeStatement(request);
                 if (executeStatementResponse.numberOfRecordsUpdated() == 1L) {
-                    statusCode = 201;
+                    responseCode = 200;
                 }
+
             }
         }
-        return new APIGatewayProxyResponseEvent().withStatusCode(statusCode)
+        return new APIGatewayProxyResponseEvent().withStatusCode(responseCode)
                 .withIsBase64Encoded(Boolean.FALSE)
                 .withHeaders(Collections.emptyMap());
     }
-
 }

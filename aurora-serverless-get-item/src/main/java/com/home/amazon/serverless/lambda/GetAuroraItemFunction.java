@@ -5,30 +5,23 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.google.gson.Gson;
+import com.home.amazon.serverless.core.BaseAuroraFunction;
 import com.home.amazon.serverless.core.Book;
-import com.home.amazon.serverless.core.DependencyFactory;
-import software.amazon.awssdk.services.rdsdata.RdsDataClient;
-import software.amazon.awssdk.services.rdsdata.model.*;
+import software.amazon.awssdk.services.rdsdata.model.ExecuteStatementRequest;
+import software.amazon.awssdk.services.rdsdata.model.ExecuteStatementResponse;
+import software.amazon.awssdk.services.rdsdata.model.Field;
+import software.amazon.awssdk.services.rdsdata.model.SqlParameter;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GetAuroraItemFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class GetAuroraItemFunction extends BaseAuroraFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private static final String GET_BY_ID_SQL_STATEMENT = "select id, name, author from %s.books where id=:id";
     static final String ID_SQL_PARAMETER_NAME = "id";
 
-    private final RdsDataClient rdsDataClient;
-    private final String auroraClusterArn;
-    private final String auroraDatabase;
-    private final String auroraSecretArn;
-
     public GetAuroraItemFunction() {
-        rdsDataClient = DependencyFactory.rdsClient();
-        auroraClusterArn = DependencyFactory.auroraClusterArn();
-        auroraDatabase = DependencyFactory.auroraDatabase();
-        auroraSecretArn = DependencyFactory.auroraSecretArn();
+        super();
     }
 
     @Override
