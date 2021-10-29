@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.google.gson.Gson;
 import com.home.amazon.serverless.core.Book;
 import com.home.amazon.serverless.core.DependencyFactory;
 import software.amazon.awssdk.services.rdsdata.RdsDataClient;
@@ -32,7 +33,7 @@ public class GetAuroraItemFunction implements RequestHandler<APIGatewayProxyRequ
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-        List<Book> result = new ArrayList<>();
+        String responseBody = "";
         String id = input.getPathParameters().get(ID_SQL_PARAMETER_NAME);
         if (id != null && !id.isEmpty()) {
             ExecuteStatementRequest request = ExecuteStatementRequest.builder()
@@ -46,14 +47,15 @@ public class GetAuroraItemFunction implements RequestHandler<APIGatewayProxyRequ
             if (executeStatementResponse.hasRecords()) {
                 List<List<Field>> records = executeStatementResponse.records();
                 for (List<Field> record : records) {
-                    result.add(transformToBook(record));
+                    Book result = transformToBook(record);
+                    responseBody = new Gson().toJson(result);
                 }
             }
         }
         return new APIGatewayProxyResponseEvent().withStatusCode(200)
                 .withIsBase64Encoded(Boolean.FALSE)
                 .withHeaders(Collections.emptyMap())
-                .withBody(result.toString());
+                .withBody(responseBody);
     }
 
     private Book transformToBook(List<Field> record) {

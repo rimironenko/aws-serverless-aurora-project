@@ -1,11 +1,16 @@
 package com.home.amazon.serverless.core;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Book {
 
-    private static final String JSON_TEMPLATE = "{\"id\":%d,\"name\":\"%s\",\"author\":\"%s\"}";
-
+    @SerializedName("id")
     private final Long id;
+
+    @SerializedName("author")
     private String author;
+
+    @SerializedName("name")
     private String name;
 
     public Book(Long id) {
@@ -32,8 +37,4 @@ public class Book {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return String.format(JSON_TEMPLATE, id, name, author);
-    }
 }

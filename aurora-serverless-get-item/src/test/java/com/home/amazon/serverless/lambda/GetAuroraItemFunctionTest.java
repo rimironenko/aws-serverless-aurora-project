@@ -3,6 +3,7 @@ package com.home.amazon.serverless.lambda;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.google.gson.Gson;
 import com.home.amazon.serverless.core.Book;
 import com.home.amazon.serverless.core.DependencyFactory;
 import org.junit.jupiter.api.Test;
@@ -56,8 +57,6 @@ class GetAuroraItemFunctionTest {
         Book testBook = new Book(TEST_ID);
         testBook.setAuthor(TEST_AUTHOR);
         testBook.setName(TEST_NAME);
-        List<Book> expectedResult = new ArrayList<>();
-        expectedResult.add(testBook);
         List<Field> book = new ArrayList<>();
         book.add(Field.builder().longValue(TEST_ID).build());
         book.add(Field.builder().stringValue(TEST_NAME).build());
@@ -77,7 +76,7 @@ class GetAuroraItemFunctionTest {
             GetAuroraItemFunction handler = new GetAuroraItemFunction();
             APIGatewayProxyResponseEvent response = handler.handleRequest(request, context);
             assertFalse(response.getBody().isEmpty());
-            assertEquals(expectedResult.toString(), response.getBody());
+            assertEquals(new Gson().toJson(testBook), response.getBody());
 
         }
     }
