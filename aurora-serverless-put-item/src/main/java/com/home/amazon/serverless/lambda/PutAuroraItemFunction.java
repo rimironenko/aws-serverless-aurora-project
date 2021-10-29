@@ -16,7 +16,7 @@ import java.util.Collections;
 
 public class PutAuroraItemFunction extends BaseAuroraFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    static final String INSERT_ITEM_SQL_STATEMENT = "insert into %s.books(name, author) values(':name',':author')";
+    static final String INSERT_ITEM_SQL_STATEMENT = "insert into %s.books(name, author) values(:name, :author)";
 
     public PutAuroraItemFunction() {
         super();
@@ -27,6 +27,7 @@ public class PutAuroraItemFunction extends BaseAuroraFunction implements Request
         String body = input.getBody();
         int statusCode = 204;
         if (body != null && !body.isEmpty()) {
+            context.getLogger().log("Body: " + body);
             Book item = new Gson().fromJson(body, Book.class);
             if (item != null) {
                 ExecuteStatementRequest request = ExecuteStatementRequest.builder()
@@ -34,8 +35,8 @@ public class PutAuroraItemFunction extends BaseAuroraFunction implements Request
                         .resourceArn(auroraClusterArn)
                         .secretArn(auroraSecretArn)
                         .sql(String.format(INSERT_ITEM_SQL_STATEMENT, auroraDatabase))
-                        .parameters(SqlParameter.builder().name("name").value(Field.builder().stringValue(item.getName()).build()).build())
-                        .parameters(SqlParameter.builder().name("author").value(Field.builder().stringValue(item.getAuthor()).build()).build())
+                        .parameters(SqlParameter.builder().name("name").value(Field.builder().stringValue(item.getName()).build()).build(),
+                                SqlParameter.builder().name("author").value(Field.builder().stringValue(item.getAuthor()).build()).build())
                         .build();
                 ExecuteStatementResponse executeStatementResponse = rdsDataClient.executeStatement(request);
                 if (executeStatementResponse.numberOfRecordsUpdated() == 1L) {

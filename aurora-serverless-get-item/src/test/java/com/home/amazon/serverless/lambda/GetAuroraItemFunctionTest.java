@@ -34,7 +34,7 @@ class GetAuroraItemFunctionTest {
     private static final String TEST_DB_NAME = "dbName";
     private static final String TEST_SECRET_ARN = "secretArn";
 
-    private static final long TEST_ID = 1L;
+    private static final int TEST_ID = 1;
     private static final String TEST_NAME = "name";
     private static final String TEST_AUTHOR = "author";
 
@@ -58,7 +58,7 @@ class GetAuroraItemFunctionTest {
         testBook.setAuthor(TEST_AUTHOR);
         testBook.setName(TEST_NAME);
         List<Field> book = new ArrayList<>();
-        book.add(Field.builder().longValue(TEST_ID).build());
+        book.add(Field.builder().longValue((long)TEST_ID).build());
         book.add(Field.builder().stringValue(TEST_NAME).build());
         book.add(Field.builder().stringValue(TEST_AUTHOR).build());
         List<List<Field>> records = new ArrayList<>();

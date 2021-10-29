@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class Book {
 
     @SerializedName("id")
-    private final Long id;
+    private final int id;
 
     @SerializedName("author")
     private String author;
@@ -13,11 +13,11 @@ public class Book {
     @SerializedName("name")
     private String name;
 
-    public Book(Long id) {
+    public Book(int id) {
         this.id = id;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 

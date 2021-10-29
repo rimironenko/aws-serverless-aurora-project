@@ -16,7 +16,7 @@ import java.util.Collections;
 
 public class UpdateAuroraItemFunction extends BaseAuroraFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    static final String UPDATE_BY_ID_SQL_STATEMENT = "update %s.books set name=':name', author=':author' where id=:id";
+    static final String UPDATE_BY_ID_SQL_STATEMENT = "update %s.books set name=:name, author=:author where id=:id";
 
     public UpdateAuroraItemFunction() {
         super();
@@ -35,9 +35,9 @@ public class UpdateAuroraItemFunction extends BaseAuroraFunction implements Requ
                         .resourceArn(auroraClusterArn)
                         .secretArn(auroraSecretArn)
                         .sql(String.format(UPDATE_BY_ID_SQL_STATEMENT, auroraDatabase))
-                        .parameters(SqlParameter.builder().name("id").value(Field.builder().longValue(item.getId()).build()).build())
-                        .parameters(SqlParameter.builder().name("name").value(Field.builder().stringValue(item.getName()).build()).build())
-                        .parameters(SqlParameter.builder().name("author").value(Field.builder().stringValue(item.getAuthor()).build()).build())
+                        .parameters(SqlParameter.builder().name("id").value(Field.builder().stringValue(String.valueOf(item.getId())).build()).build(),
+                                SqlParameter.builder().name("name").value(Field.builder().stringValue(item.getName()).build()).build(),
+                                SqlParameter.builder().name("author").value(Field.builder().stringValue(item.getAuthor()).build()).build())
                         .build();
                 ExecuteStatementResponse executeStatementResponse = rdsDataClient.executeStatement(request);
                 if (executeStatementResponse.numberOfRecordsUpdated() == 1L) {

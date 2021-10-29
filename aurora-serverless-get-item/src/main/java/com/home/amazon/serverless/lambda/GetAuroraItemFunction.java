@@ -53,7 +53,7 @@ public class GetAuroraItemFunction extends BaseAuroraFunction implements Request
 
     private Book transformToBook(List<Field> record) {
         Long id = record.get(0).longValue();
-        Book book = new Book(id);
+        Book book = new Book(Math.toIntExact(id));
         book.setName(record.get(1).stringValue());
         book.setAuthor(record.get(2).stringValue());
         return book;
