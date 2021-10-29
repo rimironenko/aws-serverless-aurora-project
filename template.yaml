@@ -150,6 +150,49 @@ Resources:
     Metadata:
       BuildMethod: makefile
 
+  UpdateAuroraItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: java8
+      Handler: com.home.amazon.serverless.lambda.UpdateAuroraItemFunction::handleRequest
+      Timeout: 60
+      MemorySize: 256
+      CodeUri: aurora-serverless-update-item
+      Policies:
+        - AWSLambdaExecute
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - rds-data:BatchExecuteStatement
+                - rds-data:BeginTransaction
+                - rds-data:CommitTransaction
+                - rds-data:ExecuteStatement
+                - rds-data:RollbackTransaction
+              Resource: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref AuroraSecret
+      Environment:
+        Variables:
+          AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
+          DatabaseName: booksdb
+          AuroraSecretArn: !Ref AuroraSecret
+      AutoPublishAlias: dev
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /books/
+            Method: put
+            RestApiId:
+              Ref: AuroraApi
+      Layers:
+        - Ref: AuroraLambdaLayer
+    Metadata:
+      BuildMethod: makefile
+
   AuroraServerlessCluster:
     Type: AWS::RDS::DBCluster
     Properties:
