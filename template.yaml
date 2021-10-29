@@ -12,6 +12,15 @@ Parameters:
 
 Resources:
 
+  AuroraLambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: aurora-serverless-lambda-layer
+      CompatibleRuntimes:
+        - java8
+    Metadata:
+      BuildMethod: java8
+
   GetAuroraItemFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -19,7 +28,7 @@ Resources:
       Handler: com.home.amazon.serverless.lambda.GetAuroraItemFunction::handleRequest
       Timeout: 60
       MemorySize: 256
-      CodeUri: .
+      CodeUri: aurora-serverless-get-item
       Policies:
         - AWSLambdaExecute
         - Version: '2012-10-17'
@@ -50,6 +59,10 @@ Resources:
             Method: get
             RestApiId:
               Ref: AuroraApi
+      Layers:
+        - Ref: AuroraLambdaLayer
+    Metadata:
+      BuildMethod: makefile
 
   AuroraServerlessCluster:
     Type: AWS::RDS::DBCluster
