@@ -9,6 +9,20 @@ Parameters:
     Type: String
     Description: Master password for the Aurora Cluster
 
+Globals:
+  Function:
+    Runtime: java8
+    Timeout: 60
+    MemorySize: 256
+    Environment:
+      Variables:
+        AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
+        DatabaseName: booksdb
+        AuroraSecretArn: !Ref AuroraSecret
+    AutoPublishAlias: dev
+    Layers:
+      - Ref: AuroraLambdaLayer
+    Tracing: Active
 
 Resources:
 
@@ -24,10 +38,7 @@ Resources:
   GetAuroraItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: java8
       Handler: com.home.amazon.serverless.lambda.GetAuroraItemFunction::handleRequest
-      Timeout: 60
-      MemorySize: 256
       CodeUri: aurora-serverless-get-item
       Policies:
         - AWSLambdaExecute
@@ -45,12 +56,6 @@ Resources:
              Action:
                - secretsmanager:GetSecretValue
              Resource: !Ref AuroraSecret
-      Environment:
-        Variables:
-          AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
-          DatabaseName: booksdb
-          AuroraSecretArn: !Ref AuroraSecret
-      AutoPublishAlias: dev
       Events:
         ApiEvent:
           Type: Api
@@ -59,18 +64,13 @@ Resources:
             Method: get
             RestApiId:
               Ref: AuroraApi
-      Layers:
-        - Ref: AuroraLambdaLayer
     Metadata:
       BuildMethod: makefile
 
   PutAuroraItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: java8
       Handler: com.home.amazon.serverless.lambda.PutAuroraItemFunction::handleRequest
-      Timeout: 60
-      MemorySize: 256
       CodeUri: aurora-serverless-put-item
       Policies:
         - AWSLambdaExecute
@@ -88,12 +88,6 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource: !Ref AuroraSecret
-      Environment:
-        Variables:
-          AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
-          DatabaseName: booksdb
-          AuroraSecretArn: !Ref AuroraSecret
-      AutoPublishAlias: dev
       Events:
         ApiEvent:
           Type: Api
@@ -102,18 +96,13 @@ Resources:
             Method: post
             RestApiId:
               Ref: AuroraApi
-      Layers:
-        - Ref: AuroraLambdaLayer
     Metadata:
       BuildMethod: makefile
 
   DeleteAuroraItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: java8
       Handler: com.home.amazon.serverless.lambda.DeleteAuroraItemFunction::handleRequest
-      Timeout: 60
-      MemorySize: 256
       CodeUri: aurora-serverless-delete-item
       Policies:
         - AWSLambdaExecute
@@ -131,12 +120,6 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource: !Ref AuroraSecret
-      Environment:
-        Variables:
-          AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
-          DatabaseName: booksdb
-          AuroraSecretArn: !Ref AuroraSecret
-      AutoPublishAlias: dev
       Events:
         ApiEvent:
           Type: Api
@@ -145,18 +128,13 @@ Resources:
             Method: delete
             RestApiId:
               Ref: AuroraApi
-      Layers:
-        - Ref: AuroraLambdaLayer
     Metadata:
       BuildMethod: makefile
 
   UpdateAuroraItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: java8
       Handler: com.home.amazon.serverless.lambda.UpdateAuroraItemFunction::handleRequest
-      Timeout: 60
-      MemorySize: 256
       CodeUri: aurora-serverless-update-item
       Policies:
         - AWSLambdaExecute
@@ -174,12 +152,6 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource: !Ref AuroraSecret
-      Environment:
-        Variables:
-          AuroraClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${AuroraServerlessCluster}'
-          DatabaseName: booksdb
-          AuroraSecretArn: !Ref AuroraSecret
-      AutoPublishAlias: dev
       Events:
         ApiEvent:
           Type: Api
@@ -188,8 +160,6 @@ Resources:
             Method: put
             RestApiId:
               Ref: AuroraApi
-      Layers:
-        - Ref: AuroraLambdaLayer
     Metadata:
       BuildMethod: makefile
 
@@ -214,3 +184,4 @@ Resources:
       StageName: dev
       Variables:
         LAMBDA_ALIAS: dev
+      TracingEnabled: true
