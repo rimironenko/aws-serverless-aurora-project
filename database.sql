@@ -11,4 +11,4 @@ create table booksdb.books (
     PRIMARY KEY (id)
 )
 @
-insert into booksdb.books values (1, 'Clean Code: A Handbook of Agile Software Craftsmanship', 'Robert C. Martin')
+insert into booksdb.books(name, author) values ('Clean Code: A Handbook of Agile Software Craftsmanship', 'Robert C. Martin')
