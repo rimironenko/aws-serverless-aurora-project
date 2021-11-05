@@ -18,6 +18,9 @@ public class UpdateAuroraItemFunction extends BaseAuroraFunction implements Requ
 
     static final String UPDATE_BY_ID_SQL_STATEMENT = "update %s.books set name=:name, author=:author where id=:id";
 
+    static final int HTTP_STATUS_CODE_NO_CONTENT = 204;
+    static final int HTTP_STATUS_CODE_SUCCESS = 200;
+
     public UpdateAuroraItemFunction() {
         super();
     }
@@ -25,7 +28,7 @@ public class UpdateAuroraItemFunction extends BaseAuroraFunction implements Requ
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         String body = input.getBody();
-        int responseCode = 204;
+        int responseCode = HTTP_STATUS_CODE_NO_CONTENT;
         if (body != null && !body.isEmpty()) {
             Gson gson = new Gson();
             Book item = gson.fromJson(body, Book.class);
@@ -41,7 +44,7 @@ public class UpdateAuroraItemFunction extends BaseAuroraFunction implements Requ
                         .build();
                 ExecuteStatementResponse executeStatementResponse = rdsDataClient.executeStatement(request);
                 if (executeStatementResponse.numberOfRecordsUpdated() == 1L) {
-                    responseCode = 200;
+                    responseCode = HTTP_STATUS_CODE_SUCCESS;
                 }
 
             }
