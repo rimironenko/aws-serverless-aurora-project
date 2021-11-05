@@ -1,45 +1,41 @@
-# App
+# aws-serverless-aurora-app
 
-This project contains an AWS Lambda maven application with [AWS Java SDK 2.x](https://github.com/aws/aws-sdk-java-v2) dependencies.
+## About the application
+It is an AWS SAM application that implements a CRUD API with Lambda handlers written in Java and uses Aurora Serverless as the database.
+
+The architecture of the application is in the picture given below.
+
+![Architecture](assets/Architecture.png)
+
+Please find the detailed description of this application in my Medium blog post: [Serverless CRUD API Java application: Aurora Serverless instead of DynamoDB](https://medium.com/@rostyslav.myronenko/serverless-crud-api-java-application-aurora-serverless-instead-of-dynamodb-a80f89abac03)
 
 ## Prerequisites
 - Java 1.8+
 - Apache Maven
+- AWS CLI is installed and configured
 - [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-- Docker
 
-## Development
+## Project structure
 
-The generated function handler class just returns the input. The configured AWS Java SDK client is created in `DependencyFactory` class and you can 
-add the code to interact with the SDK client based on your use case.
+- [template.yaml](template.yaml) - The AWS SAM template, a descriptor of an AWS SAM application
+- [aurora-serverless-lambda-layer](aurora-serverless-lambda-layer) - The Lambda Layer module that contains all the dependencies required for the Lambda functions.
+- [aurora-serverless-core](aurora-serverless-core) - The Maven module that contains the common code of the Lambda functions. Is embedded into the layer as a Maven dependency.
+- [aurora-serverless-get-item](aurora-serverless-get-item) - The Lambda function which implements the READ operation for the CRUD API.
+- [aurora-serverless-put-item](aurora-serverless-put-item) - The Lambda function which implements the CREATE operation for the CRUD API.
+- [aurora-serverless-update-item](aurora-serverless-update-item) - The Lambda function which implements the UPDATE operation for the CRUD API.
+- [aurora-serverless-delete-item](aurora-serverless-delete-item) - The Lambda function which implements the DELETE operation for the CRUD API.
+- [database.sql](database.sql) - The script to create a test table in the AWS RDS console via Query editor.
+- [Serverless_Aurora.jmx](jmeter/Serverless_Aurora.jmx) - The JMeter test plan for load testing of the CRUD API.
 
-#### Building the project
+## Build and deployment
+
+To build and deploy with AWS SAM and Maven, please execute the sequence of the commands given below:
 ```
-mvn clean install
-```
-
-#### Testing it locally
-```
-sam local invoke
-```
-
-#### Adding more SDK clients
-To add more service clients, you need to add the specific services modules in `pom.xml` and create the clients in `DependencyFactory` following the same 
-pattern as rdsClient.
-
-## Deployment
-
-The generated project contains a default [SAM template](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html) file `template.yaml` where you can 
-configure different properties of your lambda function such as memory size and timeout. You might also need to add specific policies to the lambda function
-so that it can access other AWS resources.
-
-To deploy the application, you can run the following command:
-
-```
+cd aurora-serverless-core
+mvn install
+cd ../aurora-serverless-lambda-layer
+mvn install
+cd ..
+sam build
 sam deploy --guided
 ```
-
-See [Deploying Serverless Applications](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html) for more info.
-
-
-
