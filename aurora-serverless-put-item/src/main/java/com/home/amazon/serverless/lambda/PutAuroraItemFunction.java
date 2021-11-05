@@ -18,6 +18,9 @@ public class PutAuroraItemFunction extends BaseAuroraFunction implements Request
 
     static final String INSERT_ITEM_SQL_STATEMENT = "insert into %s.books(name, author) values(:name, :author)";
 
+    static final int HTTP_STATUS_CODE_NO_CONTENT = 204;
+    static final int HTTP_STATUS_CODE_CREATED = 201;
+
     public PutAuroraItemFunction() {
         super();
     }
@@ -25,9 +28,8 @@ public class PutAuroraItemFunction extends BaseAuroraFunction implements Request
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         String body = input.getBody();
-        int statusCode = 204;
+        int statusCode = HTTP_STATUS_CODE_NO_CONTENT;
         if (body != null && !body.isEmpty()) {
-            context.getLogger().log("Body: " + body);
             Book item = new Gson().fromJson(body, Book.class);
             if (item != null) {
                 ExecuteStatementRequest request = ExecuteStatementRequest.builder()
@@ -40,7 +42,7 @@ public class PutAuroraItemFunction extends BaseAuroraFunction implements Request
                         .build();
                 ExecuteStatementResponse executeStatementResponse = rdsDataClient.executeStatement(request);
                 if (executeStatementResponse.numberOfRecordsUpdated() == 1L) {
-                    statusCode = 201;
+                    statusCode = HTTP_STATUS_CODE_CREATED;
                 }
             }
         }
