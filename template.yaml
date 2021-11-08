@@ -172,6 +172,7 @@ Resources:
       MasterUsername: !Ref AuroraUsername
       MasterUserPassword: !Ref AuroraPassword
       EnableHttpEndpoint: true
+    DeletionPolicy: Delete
 
   AuroraSecret:
     Type: 'AWS::SecretsManager::Secret'
@@ -185,4 +186,3 @@ Resources:
       Variables:
         LAMBDA_ALIAS: dev
       TracingEnabled: true
-    DeletionPolicy: Delete
