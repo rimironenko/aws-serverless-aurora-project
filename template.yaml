@@ -185,3 +185,4 @@ Resources:
       Variables:
         LAMBDA_ALIAS: dev
       TracingEnabled: true
+    DeletionPolicy: Delete
